@@ -1,0 +1,4 @@
+goal_id,driver_id,date,shift_start_time,shift_end_time,shift_type,target_earnings,target_hours,min_acceptable_fare,current_earnings,current_hours,earnings_velocity,status,goal_completion_forecast,notes
+GOAL001,DRV001,2024-02-06,06:30:00,14:30:00,morning,3200.0,7.5,80,3450.41,8.0,381.99,achieved,1.078,
+GOAL002,DRV002,2024-02-06,17:00:00,23:00:00,evening,2400.0,5.5,100,2186.14,5.75,344.27,at_risk,0.911,
+GOAL003,DRV003,2024-02-06,08:00:00,17:30:00,full_day,1800.0,8.0,70,3490.07,8.1767,336.79,achieved,1.939,new driver — prefer short trips

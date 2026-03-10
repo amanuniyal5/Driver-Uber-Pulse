@@ -1,0 +1,6 @@
+trip_id,driver_id,date,start_time,end_time,duration_min,distance_km,fare,surge_multiplier,pickup_location,dropoff_location,pickup_lat,pickup_lon,dropoff_lat,dropoff_lon,trip_status,passenger_rating
+TRIP_DRV003_01,DRV003,2024-02-06,2024-02-06 06:30:00,2024-02-06 07:50:00,80.0,88.6,500.53,1.0,"Dwarka, South West Delhi",Meerut,28.653008,77.189274,28.978532,77.452891,completed,4.6
+TRIP_DRV003_02,DRV003,2024-02-06,2024-02-06 08:07:00,2024-02-06 09:04:00,57.0,55.2,875.76,1.5,Karol Bagh,Greater Noida,28.653008,77.189274,28.39394,77.566429,completed,4.5
+TRIP_DRV003_03,DRV003,2024-02-06,2024-02-06 09:31:00,2024-02-06 11:35:51,200.8,158.3,2245.58,1.5,Punjabi Bagh,Kurukshetra,28.67119,77.138837,29.969466,76.844525,completed,3.6
+TRIP_DRV003_04,DRV003,2024-02-06,2024-02-06 11:56:51,2024-02-06 14:30:38,153.8,173.4,2402.12,1.0,Lajpat Nagar,Roorkee,28.564861,77.244232,29.874979,77.886092,completed,3.8
+TRIP_DRV003_05,DRV003,2024-02-06,2024-02-06 14:45:38,2024-02-06 15:49:32,63.9,67.0,1019.53,1.5,Indirapuram,Palwal,28.645919,77.369412,28.137221,77.337745,completed,3.6

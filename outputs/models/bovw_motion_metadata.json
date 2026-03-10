@@ -1,0 +1,30 @@
+{
+  "trained_at": "2026-03-10T14:59:52.663387",
+  "n_codewords": 64,
+  "n_classes": 7,
+  "event_classes": [
+    "AGGRESSIVE_BRAKING",
+    "AGGRESSIVE_ACCEL",
+    "AGGRESSIVE_LEFT_TURN",
+    "AGGRESSIVE_RIGHT_TURN",
+    "AGG_LEFT_LANE_CHANGE",
+    "AGG_RIGHT_LANE_CHANGE",
+    "NORMAL"
+  ],
+  "feature_cols": [
+    "accel_x",
+    "accel_y",
+    "accel_z",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z"
+  ],
+  "segment_length": 3,
+  "hop": 1,
+  "sample_rate_hz": 25,
+  "classifier_type": "RandomForestClassifier",
+  "classifier_params": {
+    "n_estimators": 100,
+    "max_depth": 10
+  }
+}

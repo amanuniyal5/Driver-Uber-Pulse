@@ -1,0 +1,6 @@
+type,message,action,driver_id
+positive,Great momentum! You're earning 27% above expected.,Keep going at this pace!,DRV001
+surge,High demand area! Opportunity rate: ₹498/hr vs baseline ₹300/hr.,Great time to take trips!,DRV001
+surge,High demand area! Opportunity rate: ₹655/hr vs baseline ₹280/hr.,Great time to take trips!,DRV002
+warning,Earnings velocity below target. Current: ₹400/hr vs Expected: ₹599/hr,Consider high-demand zones or peak hour driving.,DRV003
+surge,High demand area! Opportunity rate: ₹1055/hr vs baseline ₹320/hr.,Great time to take trips!,DRV003

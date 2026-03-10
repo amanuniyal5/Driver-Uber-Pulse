@@ -1,0 +1,207 @@
+type,priority,message,trip_id,driver_id
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_01,DRV001
+correlation,high,2 events where driving and stress coincided. These require attention.,TRIP_DRV001_01,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_01,DRV001
+safety,high,Trip TRIP_DRV001_02 had elevated risk. Consider taking a break.,TRIP_DRV001_02,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_02,DRV001
+correlation,high,6 events where driving and stress coincided. These require attention.,TRIP_DRV001_02,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_02,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_03,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_03,DRV001
+safety,high,Trip TRIP_DRV001_04 had elevated risk. Consider taking a break.,TRIP_DRV001_04,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_04,DRV001
+correlation,high,4 events where driving and stress coincided. These require attention.,TRIP_DRV001_04,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_04,DRV001
+safety,high,Trip TRIP_DRV001_05 had elevated risk. Consider taking a break.,TRIP_DRV001_05,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_05,DRV001
+correlation,high,3 events where driving and stress coincided. These require attention.,TRIP_DRV001_05,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_05,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_06,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_06,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_07,DRV001
+correlation,high,2 events where driving and stress coincided. These require attention.,TRIP_DRV001_07,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_07,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_08,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_08,DRV001
+safety,high,Trip TRIP_DRV001_09 had elevated risk. Consider taking a break.,TRIP_DRV001_09,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_09,DRV001
+correlation,high,4 events where driving and stress coincided. These require attention.,TRIP_DRV001_09,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_09,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_10,DRV001
+correlation,high,4 events where driving and stress coincided. These require attention.,TRIP_DRV001_10,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_10,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_11,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_11,DRV001
+safety,high,Trip TRIP_DRV001_12 had elevated risk. Consider taking a break.,TRIP_DRV001_12,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV001_12,DRV001
+correlation,high,4 events where driving and stress coincided. These require attention.,TRIP_DRV001_12,DRV001
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV001_12,DRV001
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_01,DRV002
+correlation,high,3 events where driving and stress coincided. These require attention.,TRIP_DRV002_01,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_01,DRV002
+safety,high,Trip TRIP_DRV002_02 had elevated risk. Consider taking a break.,TRIP_DRV002_02,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_02,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_02,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_03,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_03,DRV002
+safety,high,Trip TRIP_DRV002_04 had elevated risk. Consider taking a break.,TRIP_DRV002_04,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_04,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_04,DRV002
+safety,high,Trip TRIP_DRV002_05 had elevated risk. Consider taking a break.,TRIP_DRV002_05,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_05,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_05,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_06,DRV002
+correlation,high,2 events where driving and stress coincided. These require attention.,TRIP_DRV002_06,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_06,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_07,DRV002
+correlation,high,3 events where driving and stress coincided. These require attention.,TRIP_DRV002_07,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_07,DRV002
+safety,high,Trip TRIP_DRV002_08 had elevated risk. Consider taking a break.,TRIP_DRV002_08,DRV002
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV002_08,DRV002
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV002_08,DRV002
+safety,high,Trip TRIP_DRV003_01 had elevated risk. Consider taking a break.,TRIP_DRV003_01,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_01,DRV003
+correlation,high,6 events where driving and stress coincided. These require attention.,TRIP_DRV003_01,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_01,DRV003
+safety,high,Trip TRIP_DRV003_02 had elevated risk. Consider taking a break.,TRIP_DRV003_02,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_02,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_02,DRV003
+safety,high,Trip TRIP_DRV003_03 had elevated risk. Consider taking a break.,TRIP_DRV003_03,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_03,DRV003
+correlation,high,2 events where driving and stress coincided. These require attention.,TRIP_DRV003_03,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_03,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_04,DRV003
+correlation,high,6 events where driving and stress coincided. These require attention.,TRIP_DRV003_04,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_04,DRV003
+safety,high,Trip TRIP_DRV003_05 had elevated risk. Consider taking a break.,TRIP_DRV003_05,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_05,DRV003
+correlation,high,2 events where driving and stress coincided. These require attention.,TRIP_DRV003_05,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_05,DRV003
+safety,high,Trip TRIP_DRV003_06 had elevated risk. Consider taking a break.,TRIP_DRV003_06,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_06,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_06,DRV003
+driving_style,medium,Multiple harsh driving events detected. Smoother driving recommended.,TRIP_DRV003_07,DRV003
+wellbeing,medium,Elevated stress patterns detected. Consider de-escalation techniques.,TRIP_DRV003_07,DRV003
+correlation,high,6 events where driving and stress coincided. These require attention.,TRIP_DRV003_07,DRV003
+route,low,Road quality issues detected on this route. Consider alternate paths.,TRIP_DRV003_07,DRV003
+route,high,"Hard-brake zone at (28.616904, 77.21732166666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6131215, 77.216692). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.618571666666668, 77.21404766666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.619401999999997, 77.21687466666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6147534, 77.21408240000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.628542, 77.21543071428572). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.632899199999997, 77.21316879999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.620115, 77.21133333333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.62174375, 77.21488725). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.62471533333333, 77.20848699999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.62245333333333, 77.20851466666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6088682, 77.2134226). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.605590000000003, 77.212541). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.607863, 77.2160622). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.610981400000004, 77.2106822). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6127155, 77.21294875). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.607245333333335, 77.209693). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.605120666666664, 77.20975399999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.638869333333332, 77.21523166666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.636512399999997, 77.21437879999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6286836, 77.1964926). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.630231666666663, 77.20062683333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.630863, 77.19323533333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.631275600000002, 77.21063960000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.62806525, 77.20320000000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.63627166666667, 77.19218099999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.634745, 77.194739). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.63475166666667, 77.18826366666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61580325, 77.19677425). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.616319333333333, 77.20164716666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6134625, 77.20064024999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61883925, 77.19787525000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61342525, 77.19411975). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.616452250000002, 77.2080985). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61749342857143, 77.21137342857142). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.613131142857146, 77.20725485714286). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.614024, 77.2104095). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.617016666666668, 77.204741). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61887625, 77.207266). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.614002199999998, 77.2047034). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.609237200000003, 77.1969892). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.610900166666667, 77.19363316666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.60672166666667, 77.191068). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.608849000000003, 77.20384166666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.609673333333333, 77.20685666666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.606631000000004, 77.206659). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61030125, 77.20052875). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6115322, 77.2037768). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6067335, 77.2003645). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.62357475, 77.19457750000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.619767222222222, 77.19569777777777). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.625503000000002, 77.19254085714286). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.622519, 77.20222966666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.623983199999998, 77.20617899999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.61905025, 77.201486). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6209154, 77.2052548). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.624827166666666, 77.19908483333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.6209028, 77.197767). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.615310599999997, 77.1914124). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.5944855, 77.20512475000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (28.62974766666667, 77.19128333333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.09308725, 72.84379525). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.0992235, 72.85372675). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.088250333333335, 72.85940166666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.086426, 72.86178033333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.07895, 72.86479533333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.080132, 72.85490433333332). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.08663233333333, 72.86925566666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.0898978, 72.87056820000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.080664333333335, 72.84951333333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.052426999999998, 72.86306233333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.058023600000002, 72.8693134). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.048334999999998, 72.84710875). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.077067, 72.8680935). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.081605666666665, 72.880319). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.073479333333335, 72.880318). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.10021, 72.90373433333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.094579333333332, 72.86922766666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.100437333333332, 72.88608833333332). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.092688, 72.884192). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.094093, 72.89019). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.055406333333334, 72.898075). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.050478666666667, 72.88719833333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.092959, 72.90619233333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.086524333333333, 72.90962433333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.080675333333332, 72.910903). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (19.08854666666667, 72.88859766666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.921733000000001, 77.64009466666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.921209333333332, 77.63721600000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.919535666666667, 77.64264433333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.9190435, 77.63116825). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.90751775, 77.6153335). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.911743000000001, 77.62231100000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.90081, 77.64765799999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.933483777777777, 77.64032255555554). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.936725666666666, 77.63743033333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.933148000000001, 77.62890633333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.933958714285714, 77.63468228571428). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.941528333333332, 77.63880366666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.926209333333333, 77.64428500000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.925687333333334, 77.64097433333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.927526333333333, 77.64155266666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.92666, 77.646483). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.9224538, 77.63488120000001). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.951732, 77.63620374999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.94644225, 77.64242275). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.94526375, 77.640521). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.927321666666666, 77.62229116666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.929196333333332, 77.61101766666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.9329106, 77.6237792). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.936635714285714, 77.62374757142857). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.93614225, 77.62138775). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.931861666666668, 77.625509). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.933099666666665, 77.61593466666666). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.917340666666666, 77.61970766666667). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.921446666666668, 77.61516033333334). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.9161685, 77.61668399999999). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.923370199999999, 77.629993). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.940601000000001, 77.62774083333333). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.944165, 77.62850375). Consider alternate route.",ALL,ALL
+route,high,"Hard-brake zone at (12.945372333333333, 77.63153466666667). Consider alternate route.",ALL,ALL

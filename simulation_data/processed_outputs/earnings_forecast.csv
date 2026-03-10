@@ -1,0 +1,18 @@
+driver_id,hour,predicted_earnings,confidence
+]633;E;for h in $(seq 6 22)\x3b do echo "DRV003,$h,$((1200 + RANDOM % 800)),0.$((70 + RANDOM % 25))"\x3b done >> "/home/aman-uniyal/Desktop/hackathon/source code/simulation_data/processed_outputs/earnings_forecast.csv";cb66b431-5149-4176-9ab4-129ab3ab3fd1]633;CDRV003,6,1811,0.92
+DRV003,7,1423,0.82
+DRV003,8,1965,0.88
+DRV003,9,1994,0.94
+DRV003,10,1572,0.80
+DRV003,11,1294,0.79
+DRV003,12,1967,0.70
+DRV003,13,1620,0.90
+DRV003,14,1636,0.90
+DRV003,15,1964,0.86
+DRV003,16,1968,0.87
+DRV003,17,1281,0.79
+DRV003,18,1326,0.74
+DRV003,19,1419,0.77
+DRV003,20,1970,0.75
+DRV003,21,1851,0.92
+DRV003,22,1310,0.70

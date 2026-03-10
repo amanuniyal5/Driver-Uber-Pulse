@@ -1,0 +1,4 @@
+driver_id,name,city,shift_preference,avg_hours_per_day,avg_earnings_per_hour,experience_months,rating,total_trips,total_earnings,total_drive_hours
+DRV001,Alex Kumar,Mumbai,morning,7.5,185,18,4.8,1240,612000,1550
+DRV002,Priya Singh,Bangalore,evening,8.2,195,24,4.9,380,175000,490
+DRV003,Rajesh Patel,Delhi,full_day,9.5,175,36,4.7,62,27000,82

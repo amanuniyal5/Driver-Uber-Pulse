@@ -1,0 +1,4 @@
+driver_id,driver_name,city,timestamp,v_driver,v_location,v_opportunity,v_area,v_recent,v_expected,is_cold_start,total_trips_7d,shift_time_min,forecast_label,velocity_ratio,deviation_percent,daily_goal,daily_earnings,daily_progress,daily_remaining,weekly_goal,weekly_earnings,weekly_progress,weekly_remaining,hours_to_daily_goal,daily_goal_difficulty
+DRV001,Alex Kumar,Mumbai,2024-02-06 13:59:48,501.27,300.0,497.88,331.92,541.67,426.47,False,12,449.8,ahead,1.27,27.0,2000,3450.41,172.5,0,12000,3450.41,28.8,8549.59,0,goal_reached
+DRV002,Priya Singh,Bangalore,2024-02-06 22:20:06,432.9,280.0,654.53,436.35,450.7,447.34,False,8,320.1,on_track,1.01,0.8,2000,2186.14,109.3,0,12000,2186.14,18.2,9813.86,0,goal_reached
+DRV003,Rajesh Patel,Delhi,2024-02-06 15:14:48,457.61,320.0,1055.12,703.41,399.8,598.75,False,7,434.8,at_risk,0.67,-33.2,2000,3490.07,174.5,0,12000,3490.07,29.1,8509.93,0,goal_reached

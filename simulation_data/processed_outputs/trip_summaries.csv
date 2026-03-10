@@ -1,0 +1,6 @@
+trip_id,driver_id,total_events,aggressive_braking_count,aggressive_accel_count,harsh_turn_count,lane_change_count,avg_speed,max_speed,safety_score
+TRIP_DRV003_01,DRV003,5,4,2,5,5,57.7,79.0,77.6
+TRIP_DRV003_02,DRV003,6,5,3,5,4,49.0,93.4,93.9
+TRIP_DRV003_03,DRV003,6,1,1,4,7,53.7,80.7,76.8
+TRIP_DRV003_04,DRV003,13,2,3,5,7,53.5,74.4,72.8
+TRIP_DRV003_05,DRV003,8,3,4,3,5,43.1,75.2,80.4
