@@ -17,3 +17,4 @@ streamlit-folium>=0.15.0
 
 # Utilities
 python-dateutil>=2.8.0
+requests>=2.31.0
