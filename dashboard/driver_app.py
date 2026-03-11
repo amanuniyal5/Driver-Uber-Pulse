@@ -29,6 +29,14 @@ except ImportError:
     BOVW_AVAILABLE = False
     print("Warning: BoVW motion detector not available")
 
+# Import Audio Pipeline for real-time cabin stress detection
+try:
+    from pipelines.pipeline2_audio_4layer import AudioPipeline
+    AUDIO_PIPELINE_AVAILABLE = True
+except ImportError:
+    AUDIO_PIPELINE_AVAILABLE = False
+    print("Warning: Audio pipeline not available")
+
 # Try to import h3 for hexagonal grids
 try:
     import h3
@@ -42,6 +50,17 @@ try:
     LEAFLET_AVAILABLE = True
 except ImportError:
     LEAFLET_AVAILABLE = False
+
+# Import simulation bridge for dynamic pipeline triggering
+try:
+    from dashboard.simulation_bridge import process_completed_trip
+    BRIDGE_AVAILABLE = True
+except ImportError:
+    try:
+        from simulation_bridge import process_completed_trip
+        BRIDGE_AVAILABLE = True
+    except ImportError:
+        BRIDGE_AVAILABLE = False
 
 # Page configuration
 st.set_page_config(
@@ -275,47 +294,51 @@ class DriverPulseApp:
         self.accel_df = pd.read_csv(os.path.join(self.data_dir, 'sensor_data', 'accelerometer_data.csv'))
         self.accel_df['timestamp'] = pd.to_datetime(self.accel_df['timestamp'])
         
+        # Load audio features for real-time cabin stress detection
+        audio_path = os.path.join(self.data_dir, 'sensor_data', 'audio_features.csv')
+        if os.path.exists(audio_path):
+            self.audio_features_df = pd.read_csv(audio_path)
+        else:
+            self.audio_features_df = pd.DataFrame()
+        
         self._load_pipeline_outputs()
     
     def _load_pipeline_outputs(self):
         """Load outputs from pipelines."""
+        # Empty schemas so downstream code can always access columns safely
+        _EMPTY_FLAGGED = pd.DataFrame(columns=[
+            'flag_id', 'trip_id', 'driver_id', 'timestamp', 'elapsed_seconds',
+            'signal_type', 'event_label', 'flag_type', 'severity', 'explanation',
+            'gps_lat', 'gps_lon', 'motion_score', 'audio_score', 'combined_score',
+            'confidence', 'window_id', 'top_codewords', 'context', 'raw_value', 'threshold'
+        ])
+        _EMPTY_ZONES = pd.DataFrame(columns=[
+            'zone_id', 'driver_id', 'zone_lat', 'zone_lon', 'event_count',
+            'h3_cell', 'is_flagged_zone', 'radius_m', 'last_seen'
+        ])
+
         # Motion events (from trip summaries)
         motion_path = os.path.join(self.output_dir, 'trip_summaries.csv')
         self.motion_events = pd.read_csv(motion_path) if os.path.exists(motion_path) else pd.DataFrame()
         
-        # Load MOTION flagged moments (from simulation - only motion events)
+        # Load flagged moments from Pipeline 3 (Signal Fusion).
+        # This file already contains MOTION, AUDIO, and FUSED events —
+        # do NOT also load audio_flagged_moments.csv or audio will be double-counted.
         flagged_path = os.path.join(self.output_dir, 'flagged_moments.csv')
-        motion_flagged = pd.DataFrame()
         if os.path.exists(flagged_path):
-            motion_flagged = pd.read_csv(flagged_path)
+            self.flagged_moments = pd.read_csv(flagged_path)
             # Ensure signal_type column exists
-            if 'signal_type' not in motion_flagged.columns:
-                motion_flagged['signal_type'] = 'MOTION'
-        
-        # Load AUDIO flagged moments (from pipeline2 - real conflict detection)
-        audio_path = os.path.join(self.output_dir, 'audio_flagged_moments.csv')
-        audio_flagged = pd.DataFrame()
-        if os.path.exists(audio_path):
-            audio_flagged = pd.read_csv(audio_path)
-        
-        # Combine motion and audio flagged moments (keep them separate by signal_type)
-        combined_frames = []
-        if len(motion_flagged) > 0:
-            combined_frames.append(motion_flagged)
-        if len(audio_flagged) > 0:
-            combined_frames.append(audio_flagged)
-        
-        if combined_frames:
-            self.flagged_moments = pd.concat(combined_frames, ignore_index=True)
+            if 'signal_type' not in self.flagged_moments.columns:
+                self.flagged_moments['signal_type'] = 'MOTION'
         else:
-            self.flagged_moments = pd.DataFrame()
+            self.flagged_moments = _EMPTY_FLAGGED.copy()
             
         if len(self.flagged_moments) > 0 and 'timestamp' in self.flagged_moments.columns:
             self.flagged_moments['timestamp'] = pd.to_datetime(self.flagged_moments['timestamp'])
         
         # Hard brake zones
         zones_path = os.path.join(self.output_dir, 'driver_brake_zones.csv')
-        self.brake_zones = pd.read_csv(zones_path) if os.path.exists(zones_path) else pd.DataFrame()
+        self.brake_zones = pd.read_csv(zones_path) if os.path.exists(zones_path) else _EMPTY_ZONES.copy()
         
         # Earnings forecast
         forecast_path = os.path.join(self.output_dir, 'earnings_forecast.csv')
@@ -472,9 +495,14 @@ class DriverPulseApp:
         target = st.session_state.target_earnings
         shift_hours = st.session_state.shift_hours
         
-        # Time calculations
-        shift_start = st.session_state.get('shift_actual_start', datetime.now())
-        elapsed_hours = max(0.1, (datetime.now() - shift_start).total_seconds() / 3600)
+        # Time calculations — use trip durations (not wall-clock time)
+        # Wall-clock time is meaningless because simulation runs in seconds
+        total_trip_minutes = 0
+        for tid in st.session_state.completed_trips:
+            trip_data = self.trips_df[self.trips_df['trip_id'] == tid]
+            if len(trip_data) > 0:
+                total_trip_minutes += trip_data.iloc[0]['duration_min']
+        elapsed_hours = max(0.1, total_trip_minutes / 60)
         remaining_hours = max(0.1, shift_hours - elapsed_hours)
         
         # Velocity calculations
@@ -871,9 +899,45 @@ class DriverPulseApp:
         if progress >= 100:
             st.success("🎉 Arrived at Destination!")
             if st.button("COMPLETE TRIP & VIEW INSIGHTS", type="primary", use_container_width=True):
-                st.session_state.completed_trips.append(trip_id)
+                # 1. Update session state
+                if trip_id not in st.session_state.completed_trips:
+                    st.session_state.completed_trips.append(trip_id)
                 st.session_state.total_earnings += trip_info['fare']
                 st.session_state.simulation_running = False
+
+                # 2. DYNAMIC PIPELINE PROCESSING
+                if BRIDGE_AVAILABLE:
+                    with st.spinner("⚙️ Processing Edge Telemetry & Generating Insights..."):
+                        try:
+                            # Get the live events detected by the BoVW ML model
+                            live_events = st.session_state.detected_events
+
+                            # Get trip start time for proper timestamp construction
+                            trip_start = trip_info.get('start_time', None)
+                            if isinstance(trip_start, str):
+                                trip_start = pd.to_datetime(trip_start)
+
+                            # Trigger backend pipelines → writes fresh CSVs
+                            # Pass ALL completed trip IDs so pipelines only
+                            # process the trips the driver has actually driven
+                            process_completed_trip(
+                                base_dir=self.base_dir,
+                                trip_id=trip_id,
+                                driver_id=st.session_state.driver_id,
+                                live_events=live_events,
+                                completed_trip_ids=list(st.session_state.completed_trips),
+                                trip_start_time=trip_start
+                            )
+
+                            # Force reload the freshly generated CSVs
+                            self.load_data()
+                            st.toast("✅ Pipelines executed — fresh analytics ready!", icon="🎉")
+                        except Exception as e:
+                            print(f"Bridge error: {e}")
+                            import traceback; traceback.print_exc()
+                            st.toast("⚠️ Pipeline processing completed with warnings", icon="⚠️")
+
+                # 3. Move to Post-Trip View
                 st.session_state.view = 'post_trip'
                 st.rerun()
         
@@ -956,6 +1020,33 @@ class DriverPulseApp:
                     'flag_id': evt.get('flag_id', ''),
                     'gps_lat': event_pos[0],
                     'gps_lon': event_pos[1],
+                    'event_label': evt.get('event_label', 'Event'),
+                    'severity': str(evt.get('severity', 'medium')).lower(),
+                    'signal_type': evt.get('signal_type', 'MOTION'),
+                    'explanation': evt.get('explanation', ''),
+                    'progress': evt_progress
+                })
+            
+            # ── Also include LIVE-detected events (BoVW + Audio 4-Layer)
+            # These are detected during the simulation before Pipeline 3 runs
+            live_events = st.session_state.get('detected_events', [])
+            for idx, evt in enumerate(live_events):
+                elapsed = evt.get('elapsed_seconds', 0)
+                evt_progress = elapsed / total_time if total_time > 0 else 0
+                
+                # Use GPS from event if available, else interpolate from route
+                gps_lat = evt.get('gps_lat', None)
+                gps_lon = evt.get('gps_lon', None)
+                if gps_lat is None or gps_lon is None or pd.isna(gps_lat) or pd.isna(gps_lon):
+                    event_route_idx = int(evt_progress * len(route))
+                    event_route_idx = max(0, min(event_route_idx, len(route) - 1))
+                    gps_lat = route[event_route_idx][0]
+                    gps_lon = route[event_route_idx][1]
+                
+                flagged_events.append({
+                    'flag_id': f'live_{idx}',
+                    'gps_lat': float(gps_lat),
+                    'gps_lon': float(gps_lon),
                     'event_label': evt.get('event_label', 'Event'),
                     'severity': str(evt.get('severity', 'medium')).lower(),
                     'signal_type': evt.get('signal_type', 'MOTION'),
@@ -1473,15 +1564,14 @@ class DriverPulseApp:
     
     def _detect_events_at_progress(self, trip_id: str, progress: float):
         """
-        Detect events using trained BoVW + Random Forest model.
+        Detect events using BoVW (motion) + Audio 4-Layer (cabin stress) models.
         
         At each progress step:
-        1. Get the accelerometer window for current position
-        2. Run through K-Means to get codeword histogram
-        3. Classify using Random Forest
-        4. Add detected event to session state
+        1. MOTION: Get accelerometer window → BoVW K-Means → Random Forest classify
+        2. AUDIO:  Get audio feature windows → 4-Layer detection (Acoustic/Temporal/Prosodic/Context)
+        Both run in real-time so the live feed shows motion AND audio events.
         """
-        # Initialize model if needed (singleton pattern)
+        # Initialize motion model if needed (singleton pattern)
         if 'motion_detector' not in st.session_state:
             if BOVW_AVAILABLE:
                 detector = BoVWMotionDetector()
@@ -1492,7 +1582,22 @@ class DriverPulseApp:
             else:
                 st.session_state.motion_detector = None
         
+        # Initialize audio pipeline if needed (singleton pattern)
+        if 'audio_pipeline' not in st.session_state:
+            if AUDIO_PIPELINE_AVAILABLE:
+                try:
+                    ap = AudioPipeline(self.base_dir)
+                    # Don't call load_data — we already have audio_features_df
+                    st.session_state.audio_pipeline = ap
+                    st.session_state.audio_consecutive_positives = 0
+                    st.session_state.audio_consecutive_high = 0
+                except Exception:
+                    st.session_state.audio_pipeline = None
+            else:
+                st.session_state.audio_pipeline = None
+        
         detector = st.session_state.motion_detector
+        audio_pipe = st.session_state.audio_pipeline
         
         # Get trip accelerometer data
         trip_accel = self.accel_df[self.accel_df['trip_id'] == trip_id].copy()
@@ -1518,66 +1623,99 @@ class DriverPulseApp:
         
         st.session_state[last_checked_key] = current_time
         
-        # Get window of data around current position (~5 seconds)
-        window_start = max(0, current_time - 2.5)
-        window_end = min(total_time, current_time + 2.5)
+        # Track whether a motion event was detected at this step (for audio fusion)
+        motion_detected_now = False
         
-        window_data = trip_accel[
-            (trip_accel['elapsed_seconds'] >= window_start) &
-            (trip_accel['elapsed_seconds'] <= window_end)
-        ]
+        # ═══════════════════════════════════════════════════════════════════
+        # MOTION DETECTION (BoVW + Random Forest)
+        # ═══════════════════════════════════════════════════════════════════
+        # Slide through the interval since last check in 5-second sub-windows.
+        # The BoVW model was trained on ~5s clips, so feeding it larger windows
+        # averages out the signal and everything classifies as NORMAL.
+        interval_start = max(0, last_checked)
+        interval_end = min(total_time, current_time)
         
-        if len(window_data) < 2:
-            return
-        
-        # Use BoVW model if available
         if detector is not None:
-            result = detector.classify_window_realtime(window_data)
-            event_label = result['event_label']
-            confidence = result['confidence']
-            top_codewords = result.get('top_codewords', [])
-            
-            # Only report non-NORMAL events with decent confidence
-            if event_label != 'NORMAL' and confidence > 0.4:
-                # Check if we already detected this event type recently
-                recent_events = st.session_state.detected_events[-3:] if st.session_state.detected_events else []
-                already_detected = any(e.get('event_label') == event_label for e in recent_events)
+            SUBWINDOW = 5.0  # seconds — matches BoVW training window
+            t = interval_start
+            while t < interval_end:
+                w_start = t
+                w_end = min(t + SUBWINDOW, interval_end)
                 
-                if not already_detected:
-                    # Get current GPS position
-                    current_pos = window_data.iloc[len(window_data)//2]
-                    
-                    # Determine severity based on event type
-                    severity_map = {
-                        'AGGRESSIVE_BRAKING': 'high',
-                        'AGGRESSIVE_ACCEL': 'medium',
-                        'AGGRESSIVE_LEFT_TURN': 'medium',
-                        'AGGRESSIVE_RIGHT_TURN': 'medium',
-                        'AGG_LEFT_LANE_CHANGE': 'low',
-                        'AGG_RIGHT_LANE_CHANGE': 'low',
-                    }
-                    severity = severity_map.get(event_label, 'medium')
-                    
-                    # Build explanation with codeword info
-                    codeword_str = ', '.join([f'CW{cw[0]}:{cw[1]:.2f}' for cw in top_codewords[:3]])
-                    explanation = f"ML detected: {event_label} (confidence: {confidence:.0%})"
-                    if codeword_str:
-                        explanation += f" | Top codewords: [{codeword_str}]"
-                    
-                    st.session_state.detected_events.append({
-                        'event_label': event_label,
-                        'severity': severity,
-                        'signal_type': 'MOTION',
-                        'motion_event': event_label,
-                        'audio_event': '',
-                        'explanation': explanation,
-                        'elapsed_seconds': current_time,
-                        'speed_kmh': current_pos.get('speed_kmh', 0),
-                        'confidence': confidence,
-                        'source': 'bovw_model'
-                    })
-        else:
-            # Fallback: Use pre-computed flagged moments from CSV
+                window_data = trip_accel[
+                    (trip_accel['elapsed_seconds'] >= w_start) &
+                    (trip_accel['elapsed_seconds'] <= w_end)
+                ]
+                
+                t += SUBWINDOW  # advance to next sub-window
+                
+                if len(window_data) < 2:
+                    continue
+                
+                result = detector.classify_window_realtime(window_data)
+                event_label = result['event_label']
+                confidence = result['confidence']
+                top_codewords = result.get('top_codewords', [])
+                
+                # Only report non-NORMAL events with decent confidence
+                if event_label == 'NORMAL' or confidence <= 0.4:
+                    continue
+                
+                motion_detected_now = True
+                
+                # Dedup: skip if same event type was detected within last 30s
+                event_time = (w_start + w_end) / 2
+                recent_motion = [e for e in st.session_state.detected_events
+                                 if e.get('signal_type') == 'MOTION'
+                                 and e.get('event_label') == event_label
+                                 and abs(event_time - e.get('elapsed_seconds', 0)) < 30]
+                
+                if len(recent_motion) > 0:
+                    continue
+                
+                current_pos = window_data.iloc[len(window_data)//2]
+                severity_map = {
+                    'AGGRESSIVE_BRAKING': 'high',
+                    'AGGRESSIVE_ACCEL': 'medium',
+                    'AGGRESSIVE_LEFT_TURN': 'medium',
+                    'AGGRESSIVE_RIGHT_TURN': 'medium',
+                    'AGG_LEFT_LANE_CHANGE': 'low',
+                    'AGG_RIGHT_LANE_CHANGE': 'low',
+                }
+                severity = severity_map.get(event_label, 'medium')
+                
+                codeword_str = ', '.join([f'CW{cw[0]}:{cw[1]:.2f}' for cw in top_codewords[:3]])
+                explanation = f"ML detected: {event_label} (confidence: {confidence:.0%})"
+                if codeword_str:
+                    explanation += f" | Top codewords: [{codeword_str}]"
+                
+                st.session_state.detected_events.append({
+                    'event_label': event_label,
+                    'severity': severity,
+                    'signal_type': 'MOTION',
+                    'motion_event': event_label,
+                    'audio_event': '',
+                    'explanation': explanation,
+                    'elapsed_seconds': event_time,
+                    'speed_kmh': current_pos.get('speed_kmh', 0),
+                    'gps_lat': current_pos.get('gps_lat', None),
+                    'gps_lon': current_pos.get('gps_lon', None),
+                    'confidence': confidence,
+                    'source': 'bovw_model'
+                })
+        
+        # ═══════════════════════════════════════════════════════════════════
+        # AUDIO DETECTION (4-Layer: Acoustic + Temporal + Prosodic + Context)
+        # ═══════════════════════════════════════════════════════════════════
+        if audio_pipe is not None and len(self.audio_features_df) > 0:
+            self._detect_audio_at_progress(
+                audio_pipe, trip_id, current_time, motion_detected_now
+            )
+        
+        # ═══════════════════════════════════════════════════════════════════
+        # FALLBACK: Use pre-computed flagged moments if no models available
+        # ═══════════════════════════════════════════════════════════════════
+        if detector is None and audio_pipe is None:
             if len(self.flagged_moments) == 0:
                 return
             
@@ -1585,39 +1723,164 @@ class DriverPulseApp:
             if len(trip_events) == 0:
                 return
             
-            # Calculate how many events should be detected by now
             n_total = len(trip_events)
             n_detected = int(n_total * progress / 100)
-            
             current_count = len(st.session_state.detected_events)
             
             if n_detected > current_count:
-                # Add new events with full details from CSV
                 new_events = trip_events.iloc[current_count:n_detected]
-                
                 for _, evt in new_events.iterrows():
-                    event_label = evt.get('event_label', evt.get('event_type', 'DRIVING_EVENT'))
-                    severity = evt.get('severity', 'medium')
-                    signal_type = evt.get('signal_type', 'MOTION')
-                    motion_event = evt.get('motion_event', '')
-                    audio_event = evt.get('audio_event', '')
-                    explanation = evt.get('explanation', '')
-                    elapsed_sec = evt.get('elapsed_seconds', 0)
-                    speed = evt.get('speed_kmh', 0)
-                    layers_fired = evt.get('layers_fired', '')
-                    
                     st.session_state.detected_events.append({
-                        'event_label': event_label,
-                        'severity': severity,
-                        'signal_type': signal_type,
-                        'motion_event': motion_event,
-                        'audio_event': audio_event,
-                        'explanation': explanation,
-                        'elapsed_seconds': elapsed_sec,
-                        'layers_fired': layers_fired,
-                        'speed_kmh': speed,
+                        'event_label': evt.get('event_label', 'DRIVING_EVENT'),
+                        'severity': evt.get('severity', 'medium'),
+                        'signal_type': evt.get('signal_type', 'MOTION'),
+                        'motion_event': evt.get('motion_event', ''),
+                        'audio_event': evt.get('audio_event', ''),
+                        'explanation': evt.get('explanation', ''),
+                        'elapsed_seconds': evt.get('elapsed_seconds', 0),
+                        'layers_fired': evt.get('layers_fired', ''),
+                        'speed_kmh': evt.get('speed_kmh', 0),
                         'source': 'csv_fallback'
                     })
+    
+    def _detect_audio_at_progress(self, audio_pipe, trip_id, current_time, motion_in_window):
+        """
+        Real-time audio 4-layer detection at the current simulation timestamp.
+        Runs the same Pipeline 2 layers (Acoustic/Temporal/Prosodic/Context)
+        on the audio feature window closest to the current elapsed time.
+        """
+        # Get audio windows for this trip
+        trip_audio = self.audio_features_df[
+            self.audio_features_df['trip_id'] == trip_id
+        ]
+        if len(trip_audio) == 0:
+            return
+        
+        # Find the audio window closest to the current time
+        # Audio windows are every ~2 seconds (hop_size), so find windows
+        # in the range [current_time - 3, current_time]
+        nearby = trip_audio[
+            (trip_audio['elapsed_seconds'] >= current_time - 3) &
+            (trip_audio['elapsed_seconds'] <= current_time)
+        ]
+        if len(nearby) == 0:
+            return
+        
+        # Process the most recent window
+        row = nearby.iloc[-1]
+        
+        # Retrieve persistent state for the 4-layer tracking
+        consec_pos = st.session_state.get('audio_consecutive_positives', 0)
+        consec_high = st.session_state.get('audio_consecutive_high', 0)
+        
+        # ── Layer 1: Acoustic Features ──
+        l1 = audio_pipe.layer1_acoustic(row)
+        # ── Layer 2: Temporal Dynamics ──
+        l2 = audio_pipe.layer2_temporal(row)
+        # ── Layer 3: Prosodic Markers ──
+        l3 = audio_pipe.layer3_prosodic(row)
+        # ── Layer 4: Context Gate (with flip-back rule) ──
+        l4 = audio_pipe.layer4_context(row, consec_high)
+        
+        # Update flip-back counter
+        if l4.get('layer4_raw', False):
+            consec_high += 1
+        else:
+            consec_high = 0
+        st.session_state.audio_consecutive_high = consec_high
+        
+        # ── Decision Table (PDF v4.0) ──
+        is_harsh = l1['layer1_active']
+        is_fragmented = l2['layer2_active']
+        is_aroused = l3['layer3_active']
+        is_deviated = l4['layer4_active']
+        
+        if not is_deviated:
+            window_label = 'NORMAL'
+        elif is_harsh and is_fragmented:
+            window_label = 'CONFLICT'
+        elif (is_harsh and is_aroused) or (is_fragmented and is_aroused):
+            window_label = 'AMBIGUOUS'
+        else:
+            window_label = 'NORMAL_LOUD'
+        
+        # ── Path A: Conflict with persistence ──
+        is_conflict_window = (window_label == 'CONFLICT')
+        if is_conflict_window:
+            consec_pos += 1
+        else:
+            consec_pos = 0
+        st.session_state.audio_consecutive_positives = consec_pos
+        
+        conflict_detected = (
+            consec_pos >= CONFLICT_CONSECUTIVE_WINDOWS or
+            (is_conflict_window and motion_in_window)
+        )
+        
+        # ── Path B: Acute Safety ──
+        db_deviation = row.get('db_deviation', 0)
+        acute_safety = (db_deviation > ACUTE_DB_DEVIATION_THRESHOLD and motion_in_window)
+        
+        # ── Stress event = conflict, acute, or aroused+deviated ──
+        stress_event = conflict_detected or acute_safety or (is_aroused and is_deviated)
+        
+        # Only add event if stress detected
+        if not stress_event:
+            return
+        
+        # ── Dedup: don't fire audio events too frequently ──
+        recent_audio = [e for e in st.session_state.detected_events[-5:]
+                        if e.get('signal_type') == 'AUDIO']
+        if recent_audio:
+            last_audio_time = recent_audio[-1].get('elapsed_seconds', 0)
+            if current_time - last_audio_time < 10:  # 10s cooldown between audio events
+                return
+        
+        # Build layers_fired string
+        layers = []
+        if is_harsh: layers.append('Acoustic')
+        if is_fragmented: layers.append('Temporal')
+        if is_aroused: layers.append('Prosodic')
+        if is_deviated: layers.append('Context')
+        layers_str = '+'.join(layers)
+        
+        # Determine severity & label
+        if acute_safety:
+            severity = 'critical'
+            event_label = 'ACUTE_SAFETY'
+        elif conflict_detected:
+            severity = 'high'
+            event_label = 'CONFLICT'
+        else:
+            severity = 'medium'
+            event_label = 'STRESS_EVENT'
+        
+        # Compute stress score
+        stress_score = audio_pipe.compute_stress_score({
+            **l1, **l2, **l3, **l4
+        })
+        
+        explanation = (f"Audio 4-Layer: {window_label} | Layers: [{layers_str}] | "
+                       f"Stress: {stress_score}/100")
+        
+        st.session_state.detected_events.append({
+            'event_label': event_label,
+            'severity': severity,
+            'signal_type': 'AUDIO',
+            'motion_event': '',
+            'audio_event': event_label,
+            'explanation': explanation,
+            'elapsed_seconds': current_time,
+            'speed_kmh': 0,
+            'gps_lat': None,
+            'gps_lon': None,
+            'confidence': stress_score / 100.0,
+            'zcr': float(row.get('zcr', 0)),
+            'f0_std': float(row.get('f0_std', 0)),
+            'db_deviation': float(row.get('db_deviation', 0)),
+            'layers_fired': layers_str,
+            'source': 'audio_4layer_model'
+        })
 
     # =========================================================================
     # VIEW 5: Post-Trip Insights
@@ -1634,38 +1897,43 @@ class DriverPulseApp:
         else:
             trip_flags = pd.DataFrame()
         
-        # Count event types using signal_type column
-        n_accel = 0
-        n_audio = 0
-        n_compound = 0
+        # ── Use trip_summaries.csv (Pipeline 3 output) as the SINGLE source
+        # of truth for event counts and scores. This ensures the dashboard
+        # numbers match the CSV exactly.
+        trip_summary_row = None
+        if len(self.motion_events) > 0 and 'trip_id' in self.motion_events.columns:
+            match = self.motion_events[self.motion_events['trip_id'] == trip_id]
+            if len(match) > 0:
+                trip_summary_row = match.iloc[0]
         
-        if len(trip_flags) > 0:
-            # Count motion events (signal_type == 'MOTION')
-            if 'signal_type' in trip_flags.columns:
+        if trip_summary_row is not None:
+            n_accel = int(trip_summary_row.get('n_accel_events', 0))
+            n_audio = int(trip_summary_row.get('n_audio_events', 0))
+            n_compound = int(trip_summary_row.get('n_compound_events', 0))
+            stress_score = float(trip_summary_row.get('stress_score', 0.0))
+            safety_score = round(float(trip_summary_row.get('overall_safety_score', 100.0)))
+        else:
+            # Fallback: count from flagged_moments if trip_summaries has no data
+            n_accel = 0
+            n_audio = 0
+            n_compound = 0
+            if len(trip_flags) > 0 and 'signal_type' in trip_flags.columns:
                 n_accel = len(trip_flags[trip_flags['signal_type'] == 'MOTION'])
                 n_audio = len(trip_flags[trip_flags['signal_type'] == 'AUDIO'])
-                # Count compound events (COMPOUND signal type)
-                n_compound = len(trip_flags[trip_flags['signal_type'] == 'COMPOUND'])
-        
-        # Stress score based on event counts and severity
-        # Formula: weighted sum of events, normalized to 0-1 scale
-        # More events = higher stress, compound events weighted highest
-        duration = trip_info['duration_min']
-        total_events = n_accel + n_audio + n_compound
-        
-        if total_events > 0:
-            # Calculate stress based on event density and severity weighting
-            # Compound events are most severe (weight 3), motion (weight 2), audio (weight 1.5)
-            weighted_events = (2.0 * n_accel + 1.5 * n_audio + 3.0 * n_compound)
-            # Normalize: expect ~5-10 weighted events per hour for moderate stress
-            events_per_hour = weighted_events / (duration / 60) if duration > 0 else 0
-            # Scale to 0-1: 0 events = 0, 10+ events/hr = 1.0
-            stress_score = round(min(events_per_hour / 10, 1.0), 2)
-        else:
-            stress_score = 0.0
-        
-        # Safety score (inverse of stress, 0-100)
-        safety_score = round((1 - stress_score) * 100)
+                n_compound = len(trip_flags[trip_flags['signal_type'].isin(['COMPOUND', 'FUSED'])])
+            
+            duration = trip_info['duration_min']
+            total_events = n_accel + n_audio + n_compound
+            if total_events > 0:
+                # Event-based penalty matching Pipeline 3 formula
+                event_penalty = (n_accel * 8 + n_audio * 5 + n_compound * 15)
+                duration_factor = min(2.0, max(0.5, 60.0 / max(duration, 10)))
+                adjusted_penalty = event_penalty * duration_factor
+                safety_score = round(max(0, 100 - adjusted_penalty))
+                stress_score = round(min(1.0, adjusted_penalty / 100.0), 2)
+            else:
+                stress_score = 0.0
+                safety_score = 100
         
         # Stress band
         if stress_score < 0.40:

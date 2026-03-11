@@ -1,0 +1,2 @@
+trip_id,motion_events_count,max_severity,avg_motion_score
+TRIP_DRV003_05,4,high,0.44

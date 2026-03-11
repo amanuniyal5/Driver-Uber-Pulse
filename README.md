@@ -95,9 +95,10 @@ source code/
 │   └── run_pipeline4.py            # Standalone runner for P4
 │
 ├── dashboard/
-│   ├── driver_app.py               # Main Streamlit app (~2200 lines)
+│   ├── driver_app.py               # Main Streamlit app (~2500 lines)
+│   ├── simulation_bridge.py        # Dynamic pipeline trigger on trip completion
 │   └── components/
-│       └── map_component.py        # Interactive Folium/Leaflet map
+│       └── map_component.py        # Interactive Leaflet map (flicker-free)
 │
 ├── scripts/
 │   ├── explain_bovw_logic.py       # BoVW model explainability
@@ -120,15 +121,33 @@ source code/
 │   ├── sensor_data/
 │   ├── earnings/
 │   ├── market/
-│   └── processed_outputs/          # Pipeline outputs consumed by dashboard
+│   └── processed_outputs/          # Generated dynamically by simulation_bridge
 │       ├── flagged_moments.csv
 │       ├── audio_flagged_moments.csv
+│       ├── motion_events.csv
 │       ├── trip_summaries.csv
+│       ├── trip_motion_summary.csv
 │       ├── trip_audio_summary.csv
-│       ├── driver_brake_zones.csv
-│       └── earnings_forecast.csv
+│       ├── earnings_forecast.csv
+│       ├── earnings_recommendations.csv
+│       └── audio_processed.csv
 │
-└── outputs/                        # Full pipeline outputs (all 3 drivers)
+├── outputs/                        # Full pipeline outputs (all 3 drivers)
+│   ├── models/
+│   │   ├── bovw_motion_models.pkl  # Trained BoVW + Random Forest model
+│   │   └── bovw_motion_metadata.json
+│   └── explainability/             # Pipeline visualisation charts
+│       ├── 1_pca_reorientation.png
+│       ├── 2_bovw_histogram.png
+│       ├── 3_feature_importance.png
+│       ├── 4_cluster_visualization.png
+│       ├── 5_pipeline_summary.png
+│       ├── audio_1_conflict_anatomy.png
+│       ├── audio_2_decision_table.png
+│       ├── audio_3_layer_timeline.png
+│       └── audio_4_feature_distributions.png
+│
+└── .streamlit/                     # Streamlit theme config
 ```
 
 ---
@@ -192,6 +211,31 @@ Detects 6 classes of aggressive driving events from raw accelerometer data using
 | `ROAD_BUMP` | `accel_z` deviation > 1.5g, duration < 8 samples |
 
 Also detects road bumps and hard-brake zones using GPS clustering.
+
+In a real-world driving environment, simple **rule-based detection** (e.g., `if accel_y > 2.0g: flag_harsh_braking`) fails because it is too rigid and cannot distinguish between high-intensity noise and actual intentional maneuvers.
+
+Our **Bag of Visual Words (BoVW) + Random Forest** approach is superior for the following five reasons:
+
+### 1. Recognition of "Temporal Signatures" (Shape vs. Peak)
+*   **Rule-Based Problem:** A rule-based system only looks for a single "peak" value. If a driver hits a pothole or drops their phone, the accelerometer might spike to 3.0g for a split second. A rule-based system would incorrectly flag this as "Harsh Braking."
+*   **Our Advantage:** BoVW looks at the **entire shape** of the 0.5s window. It recognizes that "Harsh Braking" has a specific sustained curve (a ramp-up and a plateau), whereas a pothole is an instantaneous "jitter." Our model identifies the **signature**, not just the maximum value.
+
+### 2. Disambiguation of Maneuvers (Lane Change vs. Turn)
+*   **Rule-Based Problem:** A sharp lane change and a hard left turn often produce similar lateral acceleration ($accel\_x$) magnitudes. Simple thresholds cannot tell them apart.
+*   **Our Advantage:** By using a K-Means Codebook that includes **Gyroscope ($gyro\_z$) data**, our model learns distinct "codewords" for rotation. It recognizes that a lane change involves a quick "S-curve" rotation, while a turn involves a sustained yaw rate. The ML model correlates these axes automatically, whereas writing rules for every possible "if-this-then-that" combination of accel and gyro is nearly impossible.
+
+### 3. Robustness to Phone Placement (PCA Reorientation)
+*   **Rule-Based Problem:** Most rule-based algorithms assume the phone is perfectly mounted in a cradle. If the phone is tilted in a cupholder or lying flat in a pocket, the "Forward" ($accel\_y$) axis and "Vertical" ($accel\_z$) axis get swapped or mixed. The rules break instantly.
+*   **Our Advantage:** We use **Principal Component Analysis (PCA)** to dynamically reorient the axes to the vehicle's frame of reference every trip. Our ML model then classifies the data based on these **vehicle-aligned axes**, making the system work regardless of whether the phone is in a pocket, a bag, or a mount.
+
+### 4. Suppression of False Positives (Environmental Noise)
+*   **Rule-Based Problem:** Real-world driving is full of "noise"—engine vibrations, speed bumps, and closing car doors. These all create high-frequency spikes that trip simple threshold rules.
+*   **Our Advantage:** Our model uses a **Kalman Filter** to smooth sensor noise and **K-Means Quantization** to ignore irrelevant micro-vibrations. Because the Random Forest is trained on a "Normal Driving" class, it learns to ignore high-magnitude events that don't match the "fingerprint" of dangerous driving.
+
+### 5. High Explainability (The "Why" Factor)
+*   **Rule-Based Problem:** When a driver asks "Why was I flagged?", a rule-based system can only say "Because you hit 2.1g." This feels arbitrary to a driver.
+*   **Our Advantage:** Because we use **Random Forest Feature Importance**, we can pinpoint exactly which **codewords** triggered the event. We can tell a reviewer: *"This was flagged because the system detected a sequence of 'Rapid Longitudinal Decompression' codewords characteristic of a hard brake, which were absent in the preceding 5 minutes of normal driving."*
+
 
 **Outputs:** `outputs/motion_events.csv`, `outputs/flagged_moments.csv`, `outputs/models/`
 
@@ -326,7 +370,7 @@ Login → Pre-Shift Setup → Trip Selection → Trip Simulation → Post-Trip I
    ```bash
    pip install -r requirements.txt
    ```
-4. **Run the Data Pipelines:** Generate the processed analytical data from raw sensor logs.
+4. **Run the Data Pipelines:** Generate the processed analytical data from raw sensor logs. This runs the entire pipeline for all the drivers and for all the trips for our synthetic dataset.
    ```bash
    python run_all_pipelines.py
    ```
@@ -334,7 +378,7 @@ Login → Pre-Shift Setup → Trip Selection → Trip Simulation → Post-Trip I
    ```bash
    streamlit run dashboard/driver_app.py
    ```
-
+After running the simulation, the output files are stored in simulation_data/processed_outputs.
 ---
 
 ## ⚖️ Trade-offs & Assumptions
@@ -348,23 +392,3 @@ Engineering a real-world system from messy telemetry required several deliberate
 5. **No Local Tunnels:** Per hackathon rules, the app relies purely on state-managed, post-trip UI rendering rather than establishing ephemeral tunnels for live streaming from a physical device.
 
 ---
-
-## 📁 Repository Structure
-
-```text
-driver_pulse/
-├── README.md                      # This document
-├── requirements.txt               # Dependencies
-├── Dockerfile & docker-compose    # Containerization
-├── constants.py                   # Single source of truth for all thresholds
-├── run_all_pipelines.py           # Orchestrator script
-├── pipelines/
-│   ├── pipeline1_motion_bovw.py   # Ingestion, PCA, K-Means, RF Classifier
-│   ├── pipeline2_audio_4layer.py  # Privacy-safe acoustic heuristics
-│   ├── pipeline3_signal_fusion.py # Cross-modal event fusion & H3 zones
-│   └── pipeline4_earnings.py      # 19-step deterministic financial forecast
-├── dashboard/
-│   └── driver_app.py              # Streamlit + interactive maps frontend
-└── simulation_data/               # Raw mock datasets & processed output folder
-```
-```

@@ -1,11 +1,8 @@
-flag_id,trip_id,driver_id,timestamp,elapsed_seconds,signal_type,event_label,severity,explanation
-FLAG0001,TRIP_DRV003_01,DRV003,2024-02-06 06:57:21,1641,MOTION,POTHOLE,low,Road irregularity detected - pothole or speed bump
-FLAG0002,TRIP_DRV003_02,DRV003,2024-02-06 08:57:24,2964,MOTION,POTHOLE,low,Road irregularity detected - pothole or speed bump
-FLAG0003,TRIP_DRV003_03,DRV003,2024-02-06 10:21:09,2889,MOTION,RAPID_ACCELERATION,medium,Quick acceleration detected - possibly unsafe
-FLAG0004,TRIP_DRV003_03,DRV003,2024-02-06 10:58:11,5111,MOTION,HARSH_TURN,medium,Sharp turn taken at higher speed than recommended
-FLAG0005,TRIP_DRV003_03,DRV003,2024-02-06 11:04:49,5509,MOTION,HARSH_TURN,medium,Sharp turn taken at higher speed than recommended
-FLAG0006,TRIP_DRV003_03,DRV003,2024-02-06 10:19:40,2800,COMPOUND,COMPOUND_BRAKE_CONFLICT,critical,Harsh braking during passenger conflict - high stress moment
-FLAG0007,TRIP_DRV003_03,DRV003,2024-02-06 11:09:40,5800,COMPOUND,COMPOUND_TURN_CONFLICT,high,Sharp maneuver during raised voices - distracted driving risk
-FLAG0008,TRIP_DRV003_04,DRV003,2024-02-06 14:08:33,7422,MOTION,AGGRESSIVE_BRAKING,high,Sudden braking detected - possible traffic or obstacle
-FLAG0009,TRIP_DRV003_04,DRV003,2024-02-06 13:29:51,5100,COMPOUND,COMPOUND_TURN_CONFLICT,high,Sharp maneuver during raised voices - distracted driving risk
-FLAG0010,TRIP_DRV003_05,DRV003,2024-02-06 15:41:39,2581,MOTION,POTHOLE,low,Road irregularity detected - pothole or speed bump
+trip_id,driver_id,timestamp,elapsed_seconds,signal_type,event_label,flag_type,severity,motion_event,audio_event,motion_score,stress_score,gps_lat,gps_lon,speed_kmh,explanation
+TRIP_DRV003_05,DRV003,2024-02-06 15:09:44,1446.08,MOTION,AGGRESSIVE_BRAKING,harsh_braking,high,AGGRESSIVE_BRAKING,,0.43,0.0,28.523904,77.307756,46.0,"ML detected: AGGRESSIVE_BRAKING (confidence: 43%) | Top codewords: [CW9:0.50, CW2:0.50, CW63:0.00]"
+TRIP_DRV003_05,DRV003,2024-02-06 15:25:37,2399.58,MOTION,AGGRESSIVE_BRAKING,harsh_braking,high,AGGRESSIVE_BRAKING,,0.54,0.0,28.366884,77.308168,36.7,"ML detected: AGGRESSIVE_BRAKING (confidence: 54%) | Top codewords: [CW9:0.50, CW17:0.50, CW63:0.00]"
+TRIP_DRV003_05,DRV003,2024-02-06 15:41:59,3381.42,MOTION,AGGRESSIVE_BRAKING,harsh_braking,high,AGGRESSIVE_BRAKING,,0.4,0.0,28.1909,77.312557,53.0,"ML detected: AGGRESSIVE_BRAKING (confidence: 40%) | Top codewords: [CW32:0.50, CW9:0.50, CW61:0.00]"
+TRIP_DRV003_05,DRV003,2024-02-06 15:44:57,3559.78,MOTION,AGGRESSIVE_BRAKING,harsh_braking,high,AGGRESSIVE_BRAKING,,0.4,0.0,28.16132,77.325108,79.6,"ML detected: AGGRESSIVE_BRAKING (confidence: 40%) | Top codewords: [CW32:0.50, CW9:0.50, CW61:0.00]"
+TRIP_DRV003_05,DRV003,2024-02-06 14:57:46,728.46,AUDIO,STRESS_EVENT,stress_event,medium,,STRESS_EVENT,0.0,100.0,,,,Audio 4-Layer: CONFLICT | Layers: [Acoustic+Temporal+Prosodic+Context] | Stress: 100.0/100
+TRIP_DRV003_05,DRV003,2024-02-06 15:22:41,2223.72,AUDIO,STRESS_EVENT,stress_event,medium,,STRESS_EVENT,0.0,100.0,,,,Audio 4-Layer: CONFLICT | Layers: [Acoustic+Temporal+Prosodic+Context] | Stress: 100.0/100
+TRIP_DRV003_05,DRV003,2024-02-06 15:38:40,3182.22,AUDIO,STRESS_EVENT,stress_event,medium,,STRESS_EVENT,0.0,100.0,,,,Audio 4-Layer: CONFLICT | Layers: [Acoustic+Temporal+Prosodic+Context] | Stress: 100.0/100

@@ -49,9 +49,11 @@ ROAD_BUMP_LONGITUDINAL_GATE = 0.5  # |accel_y| < this
 # Deduplication
 MOTION_DEDUP_WINDOW_SEC = 30
 
-# Simulation Parameters (slow automatic simulation)
+# Simulation Parameters
+# 1% progress per update, 0.5s between updates = ~50 seconds per trip
+# Gives BoVW + Audio models enough windows to detect events properly
 SIMULATION_STEP = 1.0  # 1% per update = 100 updates for full trip
-SIMULATION_REFRESH_RATE = 1.5  # 1.5 seconds between updates (slow and visible)
+SIMULATION_REFRESH_RATE = 0.5  # seconds between updates
 
 # =============================================================================
 # AUDIO PIPELINE CONSTANTS (4-Layer Detection)
@@ -160,10 +162,6 @@ H3_RESOLUTION_MARKET = 7  # ~5 km²
 # Simulation
 SIMULATION_SPEED_MULTIPLIER = 1  # How fast to simulate (10x = 1 min trip in 6 sec)
 TRIP_EVENT_INTERVAL_SEC = 1  # How often to update during simulation
-
-# Add these to constants.py
-SIMULATION_STEP = 2.0  # Percentage to move every refresh (e.g., 2%)
-SIMULATION_REFRESH_RATE = 0.1  # Seconds between UI refreshes (0.1 = 10fps)
 
 # =============================================================================
 # UI THEME COLORS (Uber-style dark theme)

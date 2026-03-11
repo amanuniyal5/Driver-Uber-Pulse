@@ -29,9 +29,9 @@ from constants import (
 FUSION_CORRELATION_WINDOW_SEC = 2
 HARD_BRAKE_ZONE_PRECISION = 3  # decimal places for GPS rounding
 ROAD_QUALITY_ZONE_PRECISION = 3  # decimal places
-SAFETY_SCORE_CRITICAL_PENALTY = 15
-SAFETY_SCORE_MOTION_PENALTY = 5
-SAFETY_SCORE_AUDIO_PENALTY = 3
+SAFETY_SCORE_CRITICAL_PENALTY = 15  # per compound/fused event
+SAFETY_SCORE_MOTION_PENALTY = 8     # per motion event (braking, turn, etc.)
+SAFETY_SCORE_AUDIO_PENALTY = 5      # per audio/cabin stress event
 
 
 class SignalFusionPipeline:
@@ -393,21 +393,27 @@ class SignalFusionPipeline:
             if duration <= 0:
                 duration = 30  # Safeguard
             
-            # 2. PRD Formula F2.1 Implementation
-            # Weights: Accel=0.4, Audio=0.3, Compound=0.3
-            # Scale factor of 10 to normalize for typical event counts
-            # A trip with 10 accel events + 5 audio events in 30 min = (0.4*10 + 0.3*5) / 30 / 10 = 0.018
-            # After min/max clamping, this gives us a 0-1 range where ~0.1 is concerning
-            raw_stress = (0.4 * n_accel + 0.3 * n_audio + 0.3 * n_compound) / duration
-            # Normalize: typical trips have 5-50 events/hour, so divide by expected max
-            # A very bad trip might have 300 events in 30 min = 600/hr -> raw_stress = 4.0
-            # We want that to map to ~0.8-1.0
-            normalized_stress = raw_stress / 5.0  # Scale so 5 events/min = 1.0 
-            stress_score = round(min(max(normalized_stress, 0), 1), 2)
-            
-            # 3. Derive Safety Score for UI (0-100)
-            # Higher stress = lower safety
-            safety_score = round((1 - stress_score) * 100, 1)
+            # 2. PRD Formula F2.1 — Event-based safety penalty
+            # Each event type has a direct impact on the safety score:
+            #   Motion events (braking, turns):  8 points each
+            #   Audio events  (cabin stress):    5 points each
+            #   Compound events (fused signals): 15 points each
+            #   Critical events (acute safety):  10 points additional
+            event_penalty = (
+                n_accel * SAFETY_SCORE_MOTION_PENALTY +
+                n_audio * SAFETY_SCORE_AUDIO_PENALTY +
+                n_compound * SAFETY_SCORE_CRITICAL_PENALTY +
+                critical_events * 10
+            )
+
+            # Duration adjustment: shorter trips are more concerning per event
+            # Reference: 60-min trip = 1.0x, 30-min trip = 1.3x, 120-min = 0.8x
+            duration_factor = min(2.0, max(0.5, 60.0 / max(duration, 10)))
+            adjusted_penalty = event_penalty * duration_factor
+
+            # 3. Derive scores
+            safety_score = round(max(0, 100 - adjusted_penalty), 1)
+            stress_score = round(min(1.0, adjusted_penalty / 100.0), 2)
             
             # 4. Determine Risk Level based on stress_score thresholds
             if stress_score < 0.40:

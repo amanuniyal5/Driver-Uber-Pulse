@@ -1,18 +1,2 @@
-driver_id,hour,predicted_earnings,confidence
-]633;E;for h in $(seq 6 22)\x3b do echo "DRV003,$h,$((1200 + RANDOM % 800)),0.$((70 + RANDOM % 25))"\x3b done >> "/home/aman-uniyal/Desktop/hackathon/source code/simulation_data/processed_outputs/earnings_forecast.csv";cb66b431-5149-4176-9ab4-129ab3ab3fd1]633;CDRV003,6,1811,0.92
-DRV003,7,1423,0.82
-DRV003,8,1965,0.88
-DRV003,9,1994,0.94
-DRV003,10,1572,0.80
-DRV003,11,1294,0.79
-DRV003,12,1967,0.70
-DRV003,13,1620,0.90
-DRV003,14,1636,0.90
-DRV003,15,1964,0.86
-DRV003,16,1968,0.87
-DRV003,17,1281,0.79
-DRV003,18,1326,0.74
-DRV003,19,1419,0.77
-DRV003,20,1970,0.75
-DRV003,21,1851,0.92
-DRV003,22,1310,0.70
+driver_id,driver_name,city,timestamp,v_driver,v_location,v_opportunity,v_area,v_recent,v_expected,is_cold_start,total_trips_7d,shift_time_min,forecast_label,velocity_ratio,deviation_percent,daily_goal,daily_earnings,daily_progress,daily_remaining,weekly_goal,weekly_earnings,weekly_progress,weekly_remaining,hours_to_daily_goal,daily_goal_difficulty
+DRV003,Rajesh Patel,Delhi,2024-02-06 14:45:38,957.31,320.0,144.0,96.0,957.31,494.92,True,1,0.0,ahead,1.93,93.4,2000,1019.53,51.0,980.47,12000,1019.53,8.5,10980.47,2.0,easy
